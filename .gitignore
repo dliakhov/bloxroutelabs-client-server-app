@@ -1,0 +1,10 @@
+.idea/
+
+*.log
+*.exe
+*.o
+*.bin
+
+
+.config.client.yaml
+.config.server.yaml

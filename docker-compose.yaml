@@ -1,0 +1,101 @@
+version: '3.9'
+services:
+  rabbit:
+    image: rabbitmq:3.11-alpine
+    ports:
+      - 5672:5672
+    environment:
+      - RABBITMQ_DEFAULT_USER=user
+      - RABBITMQ_DEFAULT_PASS=password
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 30s
+      retries: 3
+    volumes:
+      - rabbit_mq_storage:/var/lib/rabbitmq
+    networks:
+      - service-net
+    profiles:
+      - rabbitmq
+
+  server:
+    build:
+      dockerfile: Dockerfile.server
+    environment:
+      - RABBITMQCONFIG_URL=rabbit:5672
+      - RABBITMQCONFIG_USER=user
+      - RABBITMQCONFIG_PASSWORD=password
+      - RABBITMQCONFIG_QUEUENAME=items_queue
+    depends_on:
+      rabbit:
+        condition: service_healthy
+    networks:
+      - service-net
+
+  client-add-item:
+    build:
+      dockerfile: Dockerfile.client
+    environment:
+      - RABBITMQCONFIG_URL=rabbit:5672
+      - RABBITMQCONFIG_USER=user
+      - RABBITMQCONFIG_PASSWORD=password
+      - RABBITMQCONFIG_QUEUENAME=items_queue
+      - COMMANDTYPE=AddItem
+    depends_on:
+      rabbit:
+        condition: service_healthy
+    networks:
+      - service-net
+
+  client-get-all-items:
+    build:
+      dockerfile: Dockerfile.client
+    environment:
+      - RABBITMQCONFIG_URL=rabbit:5672
+      - RABBITMQCONFIG_USER=user
+      - RABBITMQCONFIG_PASSWORD=password
+      - RABBITMQCONFIG_QUEUENAME=items_queue
+      - COMMANDTYPE=GetAllItems
+    depends_on:
+      rabbit:
+        condition: service_healthy
+    networks:
+      - service-net
+
+  client-remove-item:
+    build:
+      dockerfile: Dockerfile.client
+    environment:
+      - RABBITMQCONFIG_URL=rabbit:5672
+      - RABBITMQCONFIG_USER=user
+      - RABBITMQCONFIG_PASSWORD=password
+      - RABBITMQCONFIG_QUEUENAME=items_queue
+      - COMMANDTYPE=RemoveItem
+    depends_on:
+      rabbit:
+        condition: service_healthy
+    networks:
+      - service-net
+
+  client-get-item:
+    build:
+      dockerfile: Dockerfile.client
+    environment:
+      - RABBITMQCONFIG_URL=rabbit:5672
+      - RABBITMQCONFIG_USER=user
+      - RABBITMQCONFIG_PASSWORD=password
+      - RABBITMQCONFIG_QUEUENAME=items_queue
+      - COMMANDTYPE=GetItem
+    depends_on:
+      rabbit:
+        condition: service_healthy
+    networks:
+      - service-net
+
+networks:
+  service-net:
+    driver: bridge
+
+volumes:
+  rabbit_mq_storage:

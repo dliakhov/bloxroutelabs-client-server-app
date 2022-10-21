@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option go_package = "github.com/dliakhov/bloxroutelabs/client-server-app/models";
+
+message Command {
+  CommandType type = 1;
+  int64 ItemID = 2;
+  string ItemPayload = 3;
+}
+
+enum CommandType {
+  AddItem = 0;
+  GetItem = 1;
+  GetAllItems = 2;
+  RemoveItem = 3;
+}
+

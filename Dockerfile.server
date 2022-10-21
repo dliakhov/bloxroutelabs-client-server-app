@@ -1,0 +1,17 @@
+FROM golang:1.19.2-alpine3.16 AS builder
+
+RUN echo GOLANG BUILD VERSION $(go version)
+
+WORKDIR /mnt
+
+COPY . build_dir/
+WORKDIR build_dir/
+
+RUN mkdir /mnt/app && \
+    go build -o /mnt/app/server-app .
+
+FROM alpine:latest
+
+COPY --from=builder /mnt/app/server-app /app/server-app
+
+ENTRYPOINT ["/app/server-app", "server"]

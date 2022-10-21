@@ -1,0 +1,5 @@
+rabbitmqconfig:
+  url: localhost:5672
+  user: user
+  password: password
+  queuename: items_queue
