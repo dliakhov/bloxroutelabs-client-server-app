@@ -1,9 +1,9 @@
-version: '3.9'
+version: '3.8'
 services:
   rabbit:
     image: rabbitmq:3.11-alpine
     ports:
-      - 5672:5672
+      - "5672:5672"
     environment:
       - RABBITMQ_DEFAULT_USER=user
       - RABBITMQ_DEFAULT_PASS=password
@@ -16,8 +16,6 @@ services:
       - rabbit_mq_storage:/var/lib/rabbitmq
     networks:
       - service-net
-    profiles:
-      - rabbitmq
 
   server:
     build:
@@ -32,6 +30,8 @@ services:
         condition: service_healthy
     networks:
       - service-net
+    profiles:
+      - demo
 
   client-add-item:
     build:
@@ -47,6 +47,8 @@ services:
         condition: service_healthy
     networks:
       - service-net
+    profiles:
+      - demo
 
   client-get-all-items:
     build:
@@ -62,6 +64,8 @@ services:
         condition: service_healthy
     networks:
       - service-net
+    profiles:
+      - demo
 
   client-remove-item:
     build:
@@ -77,6 +81,8 @@ services:
         condition: service_healthy
     networks:
       - service-net
+    profiles:
+      - demo
 
   client-get-item:
     build:
@@ -92,6 +98,8 @@ services:
         condition: service_healthy
     networks:
       - service-net
+    profiles:
+      - demo
 
 networks:
   service-net:
