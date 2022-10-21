@@ -49,7 +49,7 @@ func (a *App) Start() error {
 
 	queue, err := ch.QueueDeclare(
 		a.config.RabbitMQConfig.QueueName,
-		false,
+		true,
 		false,
 		false,
 		false,
@@ -62,7 +62,7 @@ func (a *App) Start() error {
 	msgs, err := ch.Consume(
 		queue.Name,
 		"",
-		true,
+		false,
 		false,
 		false,
 		false,
@@ -76,6 +76,8 @@ func (a *App) Start() error {
 		a.workerPool.SubmitTask(func() {
 			if err := a.ProcessMessage(d); err != nil {
 				log.Errorf("Cannot process message: %v", err)
+			} else {
+				d.Ack(false)
 			}
 		})
 	}
@@ -123,6 +125,11 @@ func (a *App) ProcessMessage(d amqp.Delivery) error {
 }
 
 func (a *App) Cleanup() error {
-	a.workerPool.Quit()
-	return a.conn.Close()
+	if a.workerPool != nil {
+		a.workerPool.Quit()
+	}
+	if a.conn != nil {
+		return a.conn.Close()
+	}
+	return nil
 }

@@ -51,7 +51,7 @@ func createRandomCommand(commandType models.CommandType) (*models.Command, error
 	switch commandType {
 	case models.CommandType_AddItem:
 		itemId := rand.Int63()
-		randomChar := rand.Intn(25) + 65 // random character from A to Z
+		randomChar := rand.Intn(25) + 'A' // random character from A to Z
 
 		return &models.Command{
 			Type:        commandType,

@@ -32,7 +32,10 @@ func (c *Client) InitClient() error {
 }
 
 func (c *Client) Cleanup() error {
-	return c.conn.Close()
+	if c.conn != nil {
+		return c.conn.Close()
+	}
+	return nil
 }
 
 func (c *Client) SendCommand(ctx context.Context, command *models.Command) error {
@@ -46,7 +49,7 @@ func (c *Client) SendCommand(ctx context.Context, command *models.Command) error
 
 	queue, err := ch.QueueDeclare(
 		c.config.RabbitMQConfig.QueueName,
-		false,
+		true,
 		false,
 		false,
 		false,
@@ -74,8 +77,9 @@ func (c *Client) SendCommand(ctx context.Context, command *models.Command) error
 			Headers: map[string]any{
 				traceIDKey: ctx.Value(traceIDKey),
 			},
-			ContentType: "application/protobuf",
-			Body:        body,
+			DeliveryMode: amqp.Persistent,
+			ContentType:  "application/protobuf",
+			Body:         body,
 		})
 	if err != nil {
 		return err

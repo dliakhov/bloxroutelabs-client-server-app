@@ -4,9 +4,8 @@ import (
 	"errors"
 	"sync"
 
-	"github.com/emirpasic/gods/maps/linkedhashmap"
-
 	"github.com/dliakhov/bloxroutelabs/client-server-app/models"
+	"github.com/emirpasic/gods/maps/linkedhashmap"
 )
 
 //go:generate mockgen -package=repository -source=repo.go -destination=repo_mock.go
@@ -50,7 +49,7 @@ func (r *repoImpl) GetItem(itemID int64) (models.Item, error) {
 
 	value, ok := r.storage.Get(itemID)
 	if !ok {
-		return models.Item{}, errors.New("item not found")
+		return models.Item{}, nil
 	}
 
 	payload, ok := value.(string)

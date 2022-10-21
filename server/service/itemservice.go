@@ -54,6 +54,10 @@ func (i *itemServiceImpl) ProcessItemCommand(ctx context.Context, command *model
 		if err != nil {
 			return err
 		}
+		if item == (models.Item{}) {
+			log.WithField(traceIDKey, ctx.Value(traceIDKey)).Info("Item was not found with such id.")
+			return nil
+		}
 		log.WithField(traceIDKey, ctx.Value(traceIDKey)).Info("Item was retrieved successfully.")
 		log.WithField(traceIDKey, ctx.Value(traceIDKey)).Info(item)
 
